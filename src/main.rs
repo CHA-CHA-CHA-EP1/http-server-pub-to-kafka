@@ -9,8 +9,16 @@ async fn index() -> &'static str {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let get_env = configs::config::get_env();
-    println!("Config: {:?}", get_env);
+    let get_env = match configs::config::get_env() {
+        Ok(get_env) => get_env,
+        Err(e) => {
+            println!("Error: {:?}", e);
+            std::process::exit(1);
+        }
+    };
+
+    println!("Server port: {}", get_env.server_port);
+
     HttpServer::new(|| {
         App::new()
             .service(index)
